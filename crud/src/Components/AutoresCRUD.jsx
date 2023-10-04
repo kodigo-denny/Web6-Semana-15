@@ -2,9 +2,10 @@ import React, {useState, useEffect} from "react";
 import Tabla from "./Tabla";
 import axios from "axios";
 
-function AutoresCRUD(){
+function AutoresCRUD({api}){
 
     const[autores, setAutores] = useState()
+    
 
     useEffect(() =>{
         cargarAutores()
@@ -12,7 +13,7 @@ function AutoresCRUD(){
 
     async function cargarAutores(){
         try{
-            let res = await axios("https://denny2023.azurewebsites.net/api/autores")
+            let res = await axios(api)
             let data = await res.data
 
             //console.log(data)
