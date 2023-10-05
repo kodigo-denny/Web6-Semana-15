@@ -6,9 +6,11 @@ import LibrosCRUD from "./LibrosCRUD";
 import NotFound from "./NotFound";
 import Menu from "./Menu";
 import AutoresFORM from "./AutoresFORM";
+import LibrosFORM from "./LibrosFORM";
 
 function App(){
     const[apiAutores, setApiAutores] = useState("https://denny2023.azurewebsites.net/api/autores")
+    const[apiLibros, setApiLibros] = useState("https://denny2023.azurewebsites.net/api/libros")
 
     return(
         <BrowserRouter>
@@ -19,7 +21,8 @@ function App(){
                 <Route path="/autores/add" element={<AutoresFORM api={apiAutores} />} />
                 <Route path="/autores/edit/:id" element={<AutoresFORM api={apiAutores} />} />
                 <Route path="/autores/delete/:id" element={<AutoresFORM del={true} api={apiAutores} />} />
-                <Route path="/libros" element={<LibrosCRUD />} />
+                <Route path="/libros" element={<LibrosCRUD api={apiLibros} />} />
+                <Route path="/libros/add" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />
                 <Route path="*" element={<NotFound />} /> 
             </Routes>
             <Menu />
