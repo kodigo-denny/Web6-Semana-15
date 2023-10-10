@@ -23,6 +23,8 @@ function App(){
                 <Route path="/autores/delete/:id" element={<AutoresFORM del={true} api={apiAutores} />} />
                 <Route path="/libros" element={<LibrosCRUD api={apiLibros} />} />
                 <Route path="/libros/add" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />
+                <Route path="/libros/edit/:id" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />
+                <Route path="/libros/delete/:id" element={<LibrosFORM api={apiLibros} api2={apiAutores} del={true} />} />
                 <Route path="*" element={<NotFound />} /> 
             </Routes>
             <Menu />

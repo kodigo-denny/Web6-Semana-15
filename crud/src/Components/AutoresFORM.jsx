@@ -171,8 +171,8 @@ function AutoresFORM({api, del}){
                     <div className="valid-feedback">OK</div>
                     <div className="invalid-feedback">Campo requerido</div>
                 </div>
-                <button className={`btn btn-${(id === undefined ? "success" : del===undefined ? "primary" : "danger")}`} onClick={(e) => enviar(e)}>{id === undefined ? "Guardar" : del === undefined ? "Editar" : "Eliminar"}</button>
-                <button className="btn btn-warning" onClick={() => navigate("/autores")}>Cancelar</button>
+                <button className={`btn btn-${(id === undefined ? "success" : del===undefined ? "primary" : "danger")}`} onClick={(e) => enviar(e)}><i className={id === undefined ? "fa-solid fa-floppy-disk" : del===true ? "fa-solid fa-trash" : "fa-solid fa-pen-to-square"}></i> {id === undefined ? "Guardar" : del === undefined ? "Editar" : "Eliminar"}</button>
+                <button className="btn btn-warning" onClick={() => navigate("/autores")}><i className="fa-solid fa-xmark"></i> Cancelar</button>
             </form>
         </div>
     )

@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-function LibrosFORM({api, api2}){
+function LibrosFORM({api, api2, del}){
     const[titulo, setTitulo] = useState("")
     const[descripcion, setDescripcion] = useState("")
     const[edicion, setEdicion] = useState("")
@@ -13,10 +13,33 @@ function LibrosFORM({api, api2}){
     const[validEdicion, setValidEdicion] = useState("")
 
     const navigate = useNavigate()
+    const{id} = useParams()
+
 
     useEffect(() =>{
         cargarAutores()
+
+        if(id !== undefined){
+            cargarLibro()
+        }
     }, [])
+
+    async function cargarLibro(){
+        try{
+            let res = await axios(`${api}/${id}`)
+            let data = await res.data
+
+            setTitulo(data.titulo)
+            setDescripcion(data.descripcion)
+            setEdicion(data.edicion)
+            setIsbn(data.isbn)
+            setAutorId(data.autorId)
+        }
+        catch(error){
+            alert(error)
+            console.log(error)
+        }
+    }
 
     async function cargarAutores(){
         try{
@@ -41,8 +64,100 @@ function LibrosFORM({api, api2}){
             form.classList.add('was-validated')
         }
         else if(validarEdicion() === true && validarISBN()===true){
-            console.log("Formulario validado")
+            //console.log("Formulario validado")
             // Guardado, edicion, eliminacion
+            if(id === undefined){
+                guardar()
+            }
+            else if(del !== true){
+                editar()
+            }
+            else{
+                let respuesta = window.confirm("Esta seguro que desea eliminar")
+                
+                if(respuesta === true){
+                    eliminar()
+                }
+            }
+            
+        }
+    }
+
+    async function eliminar(){
+        try{
+            
+            let res = await axios.delete(`${api}?id=${id}`)
+            let data = await res.data
+
+            if(data.status === 1){
+                alert(data.message)
+                navigate("/libros")
+            }
+        }
+        catch(error){
+            if(error.response.status === 404){
+                alert("El libro ya fue eliminado")
+                navigate("/libros")
+            }
+            else{
+                alert(error)
+                console.log(error)
+            }
+        }
+    }
+
+    async function editar(){
+        try{
+            let libro = {
+                libroID: id,
+                titulo: titulo,
+                descripcion: descripcion,
+                edicion: edicion,
+                isbn: isbn,
+                autorId: autorId
+            }
+
+            let res = await axios.put(api, libro)
+            let data = res.data
+
+            if(data.status === 1){
+                alert(data.message)
+                navigate("/libros")
+            }
+        }
+        catch(error){
+            if(error.response.status === 500){
+                alert("El libro ya no existe")
+                navigate("/libros")
+            }
+            else{
+                alert(error)
+                console.log(error)
+            }
+        }
+    }
+
+
+    async function guardar(){
+        try{
+            let libro = {
+                titulo: titulo,
+                descripcion: descripcion,
+                edicion: edicion,
+                isbn: isbn,
+                autorId: autorId
+            }
+            let res = await axios.post(api, libro)
+            let data = res.data
+
+            if(data.status === 1){
+                alert(data.message)
+                navigate("/libros")
+            }
+        }
+        catch(error){
+            alert(error)
+            console.log(error)
         }
     }
 
@@ -81,44 +196,54 @@ function LibrosFORM({api, api2}){
     return(
         <div>
             <form className="needs-validation" noValidate>
+                {
+                    id === undefined ?
+                    ""
+                    :
+                    <div className="form-group mt-3">
+                        <label>Libro ID</label>
+                        <input className="form-control" value={id} disabled />
+                     </div>
+                    }
+                
                 <div className="form-group mt-3">
                     <label className="form-label">Titulo:</label>
-                    <input type="text" value={titulo} className="form-control" onChange={(e) => setTitulo(e.target.value)} required />
+                    <input type="text" value={titulo} className="form-control" disabled={del === undefined ? false : true} onChange={(e) => setTitulo(e.target.value)} required />
                     <div className="invalid-feedback">Campo obligatorio</div>
                 </div>
                 <div className="form-group mt-3">
                     <label className="form-label">Descripción</label>
-                    <input className="form-control" type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required />
+                    <input className="form-control" type="text" value={descripcion} disabled={del === undefined ? false : true} onChange={(e) => setDescripcion(e.target.value)} required />
                     <div className="invalid-feedback">Campo obligatorio</div>
                 </div>
                 <div className="form-group mt-3">
                     <label className="form-label">Edición</label>
-                    <input className={`form-control ${validEdicion}`} type="text" value={edicion} onKeyUp={validarEdicion} onChange={(e) => setEdicion(e.target.value)} required />
+                    <input className={`form-control ${validEdicion}`} type="text" value={edicion} disabled={del === undefined ? false : true} onKeyUp={validarEdicion} onChange={(e) => setEdicion(e.target.value)} required />
                     <div className="invalid-feedback">Campo obligatorio (debe ser un número)</div>
                 </div>
                 <div className="form-group mt-3">
                     <label className="form-label">ISBN</label>
-                    <input className={`form-control ${validIsbn}`} type="text" value={isbn} onKeyUp={validarISBN} onChange={(e) => setIsbn(e.target.value)} required />
+                    <input className={`form-control ${validIsbn}`} type="text" value={isbn} onKeyUp={validarISBN} disabled={del === undefined ? false : true} onChange={(e) => setIsbn(e.target.value)} required />
                     <div className="invalid-feedback">Campo obligatorio formato 10: #-#######-#-#  o  formato 13: ###-#-#######-#-#</div>
                 </div>
                 <div className="form-group mt-3">
                     <label className="form-label">Autor</label>
-                    <select value={autorId} onChange={(e) => setAutorId(e.target.value)} className="form-select" required>
+                    <select value={autorId} onChange={(e) => setAutorId(e.target.value)} disabled={del===undefined ? false : true} className="form-select" required>
                         <option value="">No seleccionado</option>
                         {
                             autores === undefined ?
                             ""
                             :
                             autores.map((value, index) =>{
-                                return <option key={index} value={value.autorId}>{value.nombre}</option>
+                                return <option key={index} value={value.autorId}>{value.nombre} {value.apellido}</option>
                             })
                         }
                     </select>
                     <div className="invalid-feedback">Campo obligatorio</div>
                 </div>
                 <div className="mt-3">
-                    <button className="btn btn-success" onClick={(e) => enviar(e)}>Guardar</button>
-                    <button className="btn btn-warning" onClick={() => navigate("/libros")}>Cancelar</button>
+                    <button className={`btn btn-${(id === undefined ? "success" : del===true ? "danger" : "primary")}`} onClick={(e) => enviar(e)}><i className={id === undefined ? "fa-solid fa-floppy-disk" : del===true ? "fa-solid fa-trash" : "fa-solid fa-pen-to-square"}></i> {id === undefined ? "Guardar" : del===true ? "Eliminar" : "Editar"}</button>
+                    <button className="btn btn-warning" onClick={() => navigate("/libros")}><i className="fa-solid fa-xmark"></i> Cancelar</button>
                 </div>
                 
             </form>
