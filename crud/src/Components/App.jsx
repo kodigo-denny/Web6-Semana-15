@@ -17,9 +17,16 @@ function App(){
             <Menu />
             <Routes>
                 <Route path="/" element={<Home />} />
+                
+                {/* Enrutamiento a la pagina principal del CRUD de autores */}
                 <Route path="/autores" element={<AutoresCRUD api={apiAutores} />} />
+
+                {/* Enrutamiento hacia el formulario de nuevo registro de atuor*/}
                 <Route path="/autores/add" element={<AutoresFORM api={apiAutores} />} />
+
+                {/* Enrutamiento hacia el formulario de editar autor*/}
                 <Route path="/autores/edit/:id" element={<AutoresFORM api={apiAutores} />} />
+
                 <Route path="/autores/delete/:id" element={<AutoresFORM del={true} api={apiAutores} />} />
                 <Route path="/libros" element={<LibrosCRUD api={apiLibros} />} />
                 <Route path="/libros/add" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />

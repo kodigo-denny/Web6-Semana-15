@@ -2,33 +2,51 @@ import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
+// api: la url de endpoint de autores
+// del: Contiene si el formulario se ha cargado para eliminar
 function AutoresFORM({api, del}){
+    console.log("api",api)
+    console.log("del", del)
+
+    // Son estados asociados a los campos del formulario
     const[nombre, setNombre] = useState("")
     const[apellido, setApellido] = useState("")
     const[pais, setPais] = useState("")
 
+    // id: el parametro id recibido desde el CRUD
     const {id} = useParams()
+    console.log("id", id)
 
+    // navigate es el nombre con el cual voy a invocar a la funcion que haga la redirección
     const navigate = useNavigate()
 
     useEffect(() =>{
-        
+        console.log("termino el render")
+
+        // Este if sirve para verificar si se deben cargar los datos en el fomrulario
         if(id !== undefined){
-            // cargar datos
-            cargarAutor()
+            cargarAutor()// Invoca a la funcion cargar autor
         }
     }, [])
 
+    // La funcion encargada de cargar los datos del autor para los casos de editar y eliminar
     async function cargarAutor(){
         try{
-            let res = await axios(api+"/"+id)
-            let data = await res.data
+            let res = await axios(api+"/"+id)// Solicitud GET con parametro ID
+            let data = await res.data // Convierte el resultado a objeto 
 
+            //console.log(data)
+
+            // Los datos devueltos por la API se asignan a los respectivos estados
+            // Para que en el formulario se carguen dichos datos
             setNombre(data.nombre)
             setApellido(data.apellido)
             setPais(data.paisOrigen)
         }
         catch(error){
+            console.log(error)
+
+            // Verifica si el error es 404 lo que significa que el id del autor no existe
             if(error.response.status === 404){
                 alert("El registro no existe")
                 navigate("/autores")
@@ -40,20 +58,24 @@ function AutoresFORM({api, del}){
         }
     }
 
+    // Funcion asincrona para guardar un nuevo registro
     async function guardar(){
         try{
+            // Creación del objeto autor el cual posteriormente se le enviara a la API
             let autor = {
                 nombre: nombre,
                 apellido: apellido,
                 paisOrigen: pais
             }
 
+            // Solicitud POST hacia la API
             let res = await axios.post(api, autor)
-            let data = await res.data
+            let data = await res.data// Convierte el resultado en objeto
 
+            // Verifica si la API respondio en status con el valor de 1
             if(data.status === 1){
-                alert(data.message)
-                navigate("/autores")
+                alert(data.message)// Muestra el mensaje devuelto por la API
+                navigate("/autores")// Redirecciona al componente donde se muestra la tabla de autores
             }
         }
         catch(error){
@@ -115,18 +137,26 @@ function AutoresFORM({api, del}){
         }
     }
 
+    // Esta funciones es invocada por el boton guardar, editar o eliminar
     function enviar(e){
+
+        // Detiene la propagacion del evento submit generada por defacto en el button dado que este se encuentra dentro de un formulario
         e.preventDefault()
         e.stopPropagation()
+
+        // Seleccionamos el formulario el cual tiene la clase needs-validation
         let form = document.querySelector(".needs-validation")
 
+        // Verificamos si el formulario es invalido
         if (!form.checkValidity()){
+            // Si es invalido agregamos el estilo de la validacion (invalid-feedback)
             form.classList.add('was-validated')
         }
         else{
-            // Validaciones extras
-            if(id === undefined)
-                guardar()
+            // Significa que el formulario tiene todos los campos completos
+            // Por  lo cual procedemos a ejecutar la acción (guardar, editar, eliminar)
+            if(id === undefined)// Si el id es undefined significa que es un nuevo registro
+                guardar()// Invoca a la funcion guardar
             else if(del === undefined)
                 editar()
             else{
