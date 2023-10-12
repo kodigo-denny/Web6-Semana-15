@@ -27,11 +27,21 @@ function App(){
                 {/* Enrutamiento hacia el formulario de editar autor*/}
                 <Route path="/autores/edit/:id" element={<AutoresFORM api={apiAutores} />} />
 
+                {/* Enrutamiento hacia el formulario de eliminar autor */}
                 <Route path="/autores/delete/:id" element={<AutoresFORM del={true} api={apiAutores} />} />
+
+                {/* Enrutamiento a la pagina principal del CRUD de libros */}
                 <Route path="/libros" element={<LibrosCRUD api={apiLibros} />} />
+
+                {/* Enrutamiento hacia el formulario de nuevo libro*/}
                 <Route path="/libros/add" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />
+
+                {/* Enrutamiento hacia el formulario de editar libro */}
                 <Route path="/libros/edit/:id" element={<LibrosFORM api={apiLibros} api2={apiAutores} />} />
+
+                {/* Enrutamiento hacia el formulario de eliminar libro */}
                 <Route path="/libros/delete/:id" element={<LibrosFORM api={apiLibros} api2={apiAutores} del={true} />} />
+
                 <Route path="*" element={<NotFound />} /> 
             </Routes>
             <Menu />

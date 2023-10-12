@@ -84,6 +84,7 @@ function AutoresFORM({api, del}){
         }
     }
 
+    // Funcion encargada de editar el autor
     async function editar(){
         try{
             let autor = {
@@ -93,44 +94,52 @@ function AutoresFORM({api, del}){
                 paisOrigen: pais
             }
             
+            // Se realiza una solicitud a la API de tipo PUT
             let res = await axios.put(api, autor)
-            let data = await res.data
+            let data = await res.data// Convertimos la respuesta a objeto
 
+            // Verificamos si la APi devolvio status 1
             if(data.status === 1){
-                alert(data.message)
-                navigate("/autores")
+                alert(data.message)// Mostramos el mensaje de la API
+                navigate("/autores")// Redireccionamos a la tabla autores
             }
         }
         catch(error){
-            
+            // Verificamos si la api respondio que no existe
             if(error.response.status === 500){
                 alert("El registro ya no existe")
                 navigate("/autores")
             }
             else{
+                // Si es otro tipo de error mostramos el detalle
                 alert(error)
                 console.log(error)
             }
         }
     }
 
+    // Funcion se encarga de hacer la peticion de tipo DELETe hacia la API
     async function eliminar(){
         try{
-            let res = await axios.delete(api+"?id="+id)
-            let data = await res.data
+            let res = await axios.delete(api+"?id="+id)// Se solicita DELETE
+            let data = await res.data// Convertimos el resultado de la API en un objeto
 
+
+            // Verificamos si la API a devuelto el estado de que fue eliminado
             if(data.status === 1){
-                alert(data.message)
-                navigate("/autores")
+                alert(data.message)// Mostramos el mensaje devuelto por la API
+                navigate("/autores")// Redireccionamos hacia la tabla principal de autores
             }
 
         }
         catch(error){
+            // Verificamos si no existe el id a eliminar
             if(error.response.status === 404){
-                alert("El autor ya no existe")
-                navigate("/autores")
+                alert("El autor ya no existe")// Mostramos mensaje de que no existe
+                navigate("/autores")// Redireccionamos hacia la tabla principal de autores
             }
             else{
+                // Si es otro tipo de error ingresa aqui
                 alert(error)
                 console.log(error)
             }
@@ -157,12 +166,12 @@ function AutoresFORM({api, del}){
             // Por  lo cual procedemos a ejecutar la acción (guardar, editar, eliminar)
             if(id === undefined)// Si el id es undefined significa que es un nuevo registro
                 guardar()// Invoca a la funcion guardar
-            else if(del === undefined)
+            else if(del === undefined)// Si del es undefined significa que se desea editar
                 editar()
-            else{
-                let respuesta = window.confirm("Esta seguro que desea eliminar?")
-                if(respuesta === true)
-                    eliminar()
+            else{// Se desea eliminar
+                let respuesta = window.confirm("Esta seguro que desea eliminar?")// Solicitamos confirmacion del usuario
+                if(respuesta === true)// Verificamos la respuesta
+                    eliminar()// Si la respuesta es true entonces invocamos a eliminar
             }
         }
         
@@ -174,6 +183,9 @@ function AutoresFORM({api, del}){
             <form className="needs-validation" noValidate>
 
                 {
+                    // Se verifica que el id sea diferente de undefined
+                    // Si esto es cierto significa que se va editar o eliminar el registro
+                    // Por  lo cual mostrar el campor autor id
                     id !== undefined ?
                         <div className="form-group mt-3">
                             <label className="form-label">Autor ID:</label>
